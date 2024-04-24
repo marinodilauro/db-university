@@ -29,3 +29,6 @@
     SELECT COUNT(*) AS `total_departments` FROM `departments`;
     ```
 8. Quanti sono gli insegnanti che non hanno un numero di telefono? (50)
+    ```SQL
+    SELECT COUNT(*) AS `total_teachers_without_phone_number` FROM `teachers` WHERE `phone` IS NULL;
+    ```
