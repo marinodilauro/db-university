@@ -125,5 +125,42 @@
 
     Il filtro della query poteva anche essere scritto ```WHERE `departments`.`id` = 5;```
 
+#### BONUS
+1. Selezionare per ogni studente il numero di tentativi sostenuti per ogni esame, stampando anche il voto massimo. 
 
-7. **BONUS**: Selezionare per ogni studente il numero di tentativi sostenuti per ogni esame, stampando anche il voto massimo. Successivamente, filtrare i tentativi con voto minimo 18.
+    ```SQL
+    SELECT `students`.`surname` AS 'student_surname', `students`.`name` AS 'student_name', `courses`.`name` AS 'course_name', COUNT(`courses`.`id`) AS 'number_of_try', MAX(`exam_student`.`vote`) AS 'max_vote'
+    FROM `students`
+    JOIN `exam_student` ON `students`.`id` = `exam_student`.`student_id`
+    JOIN `exams` ON `exams`.`id` = `exam_student`.`exam_id`
+    JOIN `courses` ON `courses`.`id` = `exams`.`course_id`
+    JOIN `degrees` ON `degrees`.`id` = `courses`.`degree_id`
+    GROUP BY `students`.`surname`, `students`.`name`, `courses`.`name`
+    ORDER BY `students`.`surname` ASC;
+    ```
+    Result:
+    ![alt text](image-10.png)
+
+2. Successivamente, filtrare i tentativi con voto minimo 18.
+
+    Per filtrare i risultati si può aggiungere ```WHERE `exam_student`.`vote` >= 18``` subito prima dell'istruzione ```GRUOP BY```. Tuttavia la tabella risultante non avrebbe molto senso: in quanto si sta filtrando solo gli esami superati, il numero di tentativi sarà sempre 1.
+    Si potrebbe strutturare una nuova tabella utilizzando la query seguente:
+
+    ```SQL
+    SELECT `students`.`surname` AS 'student_surname', `students`.`name` AS 'student_name', `courses`.`name` AS 'passed_course_name',`exam_student`.`vote` AS 'exam_vote'
+    FROM `students`
+    JOIN `exam_student` ON `students`.`id` = `exam_student`.`student_id`
+    JOIN `exams` ON `exams`.`id` = `exam_student`.`exam_id`
+    JOIN `courses` ON `courses`.`id` = `exams`.`course_id`
+    JOIN `degrees` ON `degrees`.`id` = `courses`.`degree_id`
+    WHERE `exam_student`.`vote` >= 18
+    GROUP BY `students`.`surname`, `students`.`name`, `courses`.`name`, `exam_student`.`vote`
+    ORDER BY `students`.`surname` ASC;
+    ```
+
+    Result: 
+    ![alt text](image-11.png)
+
+    In questo modo si elimina la colonna ```number_of_try``` e si cambia la colonna ```max_vote``` in ```exam_vote``` che ora mostra sempre un voto superiore a 18 (e non il massimo voto ottenuto in quell'esame). Si ottiene così una tabella che mostra lo studente,tutti gli esami che ha superato e il voto con cui li ha superati.
+
+
